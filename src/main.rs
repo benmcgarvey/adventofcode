@@ -11,31 +11,54 @@ fn main() {
     part_two(lines.as_mut());
 }
 
-fn lines_from_file(filename: impl AsRef<Path>) -> Vec<i64> {
+fn lines_from_file(filename: impl AsRef<Path>) -> Vec<String> {
     let file = File::open(filename).expect("no such file");
     let buf = BufReader::new(file);
     buf.lines()
         .map(|l| l.expect("Could not parse line"))
-        .map(|string| string.parse::<i64>().unwrap())
         .collect()
 }
 
-fn part_one(lines: &mut Vec<i64>) {
-    let increase_count = lines
-        .windows(2)
-        .fold(0, |acc, curr| if curr[1] > curr[0] { acc + 1 } else { acc });
+fn part_one(lines: &mut Vec<String>) {
+    // (horizontal, vertical)
+    let position = lines.iter().fold((0, 0), |acc, curr| {
+        let mut iter = curr.split_whitespace();
+        let direction = iter.next().unwrap();
+        let magnitude = iter.next().unwrap().parse::<i64>().unwrap();
 
-    println!("part one increase count: {:?}", increase_count);
-}
-
-fn part_two(lines: &mut Vec<i64>) {
-    let mut increase_count = 0;
-    lines.windows(3).reduce(|prev, next| {
-        if next.iter().sum::<i64>() > prev.iter().sum() {
-            increase_count += 1;
+        match direction {
+            "forward" => (acc.0 + magnitude, acc.1),
+            "up" => (acc.0, acc.1 - magnitude),
+            "down" => (acc.0, acc.1 + magnitude),
+            _ => acc,
         }
-        next
     });
 
-    println!("part two increase count: {:?}", increase_count);
+    println!(
+        "part one position and solution: {:?} {:?}",
+        position,
+        position.0 * position.1
+    );
+}
+
+fn part_two(lines: &mut Vec<String>) {
+    // (horizontal, vertical, aim)
+    let position = lines.iter().fold((0, 0, 0), |acc, curr| {
+        let mut iter = curr.split_whitespace();
+        let direction = iter.next().unwrap();
+        let magnitude = iter.next().unwrap().parse::<i64>().unwrap();
+
+        match direction {
+            "forward" => (acc.0 + magnitude, acc.1 + (magnitude * acc.2), acc.2),
+            "up" => (acc.0, acc.1, acc.2 - magnitude),
+            "down" => (acc.0, acc.1, acc.2 + magnitude),
+            _ => acc,
+        }
+    });
+
+    println!(
+        "part two position and solution: {:?} {:?}",
+        position,
+        position.0 * position.1
+    );
 }
