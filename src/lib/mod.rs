@@ -3,12 +3,14 @@ use std::{
     io::{BufRead, BufReader},
 };
 mod one;
+mod three;
 mod two;
 
 pub fn run(day: i8) {
     match day {
         1 => one::execute(lines_from_file("one")),
         2 => two::execute(lines_from_file("two")),
+        3 => three::execute(lines_from_file("three")),
         _ => println!("Not implemented"),
     }
 }
